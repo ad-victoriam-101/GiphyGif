@@ -6,8 +6,8 @@
     <title>Pausing the Gifs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
-    <script src="main.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    
     <style>
         .jumbotron{
             text-align: center;
@@ -23,6 +23,10 @@
         #gif-input{
             padding: 2px;
             /* margin:5px 0 0 0; */
+        }
+        .gif{
+            border: 1px solid blueviolet;
+            margin: 5px;
         }
     </style>
 </head>
@@ -60,8 +64,8 @@
 
         </div>
     </div>
-    <script>
-        var startingGifs = ["Pokemon","Konasuba","Animal Crossing","Super Smash"]
+<script>
+        var startingGifs = ["Pokemon","DOOM","Animal Crossing","Super Smash"]
         function displayGifInfo(){
             // giffy api key BFv4RkOQVZDkka7899Fju31eWlY4LOOC
             var gifAPI = "BFv4RkOQVZDkka7899Fju31eWlY4LOOC"
@@ -71,62 +75,77 @@
                 url: queryURL,
                 method: "GET"
             }).then(function(response){
+                $("#gifImages").text('')
                 var rating = response.rating;
-                var stillImgURL = response.data.fixed_height_still.url
+                var gifInfo = (response.data);
+                gifInfo.forEach(function(element){
+                    var stilImgURL = element.images.fixed_height_still.url
+                    // var stillImage = $("<img class = 'img-responsive mx-auto' style 'display:block'>").attr({src: imgURL , datastate: "still"})
+                    var gifAnimatedUrl = element.images.fixed_height.url
+                    var gifAnimated = $("<img class = 'img-responsive mx-auto gif' style 'display:block'>").attr({src: stilImgURL, "data-state": "still","data-still":stilImgURL,"data-animate":gifAnimatedUrl})
+                    $("#gifImages").append(gifAnimated)
+                    
+                });
+                
+                
             
-
-
             // end of then function()
             });
         // end of function(DISPLAY)
         }
-              // Function for displaying movie data
       function renderButtons() {
+        // (this is necessary otherwise you will have repeat buttons)
+        $("#gifButtons").empty();
 
-// Deleting the movies prior to adding new movies
-// (this is necessary otherwise you will have repeat buttons)
-$("#gifButtons").empty();
+        // Looping through the array of 
+        for (var i = 0; i < startingGifs.length; i++) {
 
-// Looping through the array of movies
-for (var i = 0; i < startingGifs.length; i++) {
-
-  // Then dynamicaly generating buttons for each movie in the array
-  // This code $("<button>") is all jQuery needs to create the beginning and end tag. (<button></button>)
-  var a = $("<button>");
-  // Adding a class of movie-btn to our button
-  a.addClass("gif-btn btn btn-danger ml-4 mb-3");
-  // Adding a data-attribute
-  a.attr("data-name", startingGifs[i]);
-  // Providing the initial button text
-  a.text(startingGifs[i]);
-  // Adding the button to the buttons-view div
-  $("#gifButtons").append(a);
-}
+        // This code $("<button>") is all jQuery needs to create the beginning and end tag. (<button></button>)
+        var a = $("<button>");
+        // Adding a class
+        a.addClass("gif-btn btn btn-danger ml-4 mb-3");
+        // Adding a data-attribute
+        a.attr("data-name", startingGifs[i]);
+        // Providing the initial button text
+        a.text(startingGifs[i]);
+        // Adding the button to the buttons-view div
+        $("#gifButtons").append(a);
+        }
 }
 
-// This function handles events where a movie button is clicked
-$("#add-gif").on("click", function(event) {
-event.preventDefault();
-// This line grabs the input from the textbox
-var gif = $("#gif-input").val().trim();
+// This function handles events where a gif button is clicked
+        $("#add-gif").on("click", function(event) {
+        event.preventDefault();
+        // This line grabs the input from the textbox
+        var gif = $("#gif-input").val().trim();
 
-// Adding movie from the textbox to our array
-startingGifs.push(gif);
 
-// Calling renderButtons which handles the processing of our movie array
-renderButtons();
-});
+        startingGifs.push(gif);
+        $("#gif-input").val('');
+        renderButtons();
+        });
+    $(".gif").on("click", function() {
+        debugger;
+        alert("CLICKED")
+      // The attr jQuery method allows us to get or set the value of any attribute on our HTML element
+      var state = $(this).attr("data-state");
+      // If the clicked image's state is still, update its src attribute to what its data-animate value is.
+      // Then, set the image's data-state to animate
+      // Else set src to the data-still value
+      if (state === "still") {
+        $(this).attr("src", $(this).attr("data-animate"));
+        $(this).attr("data-state", "animate");
+      } else {
+        $(this).attr("src", $(this).attr("data-still"));
+        $(this).attr("data-state", "still");
+      }
+    });
 
-// Adding a click event listener to all elements with a class of "movie-btn"
-$(document).on("click", ".movie-btn", displayMovieInfo);
+
+$(document).on("click", ".gif-btn", displayGifInfo);
 
 // Calling the renderButtons function to display the intial buttons
 renderButtons();
     </script>
-    <!-- start of JS links -->
-    
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 </body>
 </html>
